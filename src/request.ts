@@ -48,6 +48,8 @@ export interface HttpClientOptions {
 	fetch?: FetchLike;
 	retry?: RetryOptions | false;
 	timeoutMs?: number;
+	/** Called before every HTTP request (including retries) for quota/rate limiting. */
+	beforeRequest?: () => void | Promise<void>;
 }
 
 const DEFAULT_BASE_URL = 'https://api.tumblr.com';
@@ -112,6 +114,7 @@ export class TumblrHttpClient {
 	private readonly fetchImpl: FetchLike;
 	private readonly retry: RetryOptions | false;
 	private readonly timeoutMs: number;
+	private readonly beforeRequest?: () => void | Promise<void>;
 
 	constructor(options: HttpClientOptions = {}) {
 		this.baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, '');
@@ -120,6 +123,7 @@ export class TumblrHttpClient {
 		this.fetchImpl = options.fetch ?? globalThis.fetch.bind(globalThis);
 		this.retry = options.retry === undefined ? DEFAULT_RETRY : options.retry;
 		this.timeoutMs = options.timeoutMs ?? 30_000;
+		this.beforeRequest = options.beforeRequest;
 	}
 
 	private buildPairs(values: Record<string, QueryValue> | undefined): Array<[string, string]> {
@@ -200,6 +204,7 @@ export class TumblrHttpClient {
 			options.signal?.addEventListener('abort', onAbort, { once: true });
 
 			try {
+				await this.beforeRequest?.();
 				const headers: Record<string, string> = {
 					'User-Agent': this.userAgent,
 					Accept: 'application/json',

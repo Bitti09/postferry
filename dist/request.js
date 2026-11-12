@@ -58,6 +58,7 @@ export class TumblrHttpClient {
     fetchImpl;
     retry;
     timeoutMs;
+    beforeRequest;
     constructor(options = {}) {
         this.baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, '');
         this.auth = options.auth ?? { type: 'none' };
@@ -65,6 +66,7 @@ export class TumblrHttpClient {
         this.fetchImpl = options.fetch ?? globalThis.fetch.bind(globalThis);
         this.retry = options.retry === undefined ? DEFAULT_RETRY : options.retry;
         this.timeoutMs = options.timeoutMs ?? 30_000;
+        this.beforeRequest = options.beforeRequest;
     }
     buildPairs(values) {
         if (!values)
@@ -131,6 +133,7 @@ export class TumblrHttpClient {
             const onAbort = () => controller.abort(options.signal?.reason);
             options.signal?.addEventListener('abort', onAbort, { once: true });
             try {
+                await this.beforeRequest?.();
                 const headers = {
                     'User-Agent': this.userAgent,
                     Accept: 'application/json',

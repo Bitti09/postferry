@@ -69,7 +69,8 @@ export class TumblrClient {
             userAgent: options.userAgent ?? DEFAULT_UA,
             fetch: options.fetch,
             retry: options.retry,
-            timeoutMs: options.timeoutMs
+            timeoutMs: options.timeoutMs,
+            beforeRequest: options.beforeRequest
         });
     }
     request(path, options = {}) {
@@ -162,6 +163,7 @@ export class TumblrClient {
     }
     /** Fetch avatar bytes. The endpoint is public and returns an image. */
     async blogAvatar(blogIdentifier, size = 64) {
+        await this.options.beforeRequest?.();
         const fetchImpl = this.options.fetch ?? globalThis.fetch.bind(globalThis);
         return fetchImpl(this.blogAvatarUrl(blogIdentifier, size), {
             headers: {

@@ -67,6 +67,8 @@ export interface TumblrClientOptions {
 	fetch?: FetchLike;
 	retry?: RetryOptions | false;
 	timeoutMs?: number;
+	/** Called before every HTTP request (including retries). */
+	beforeRequest?: () => void | Promise<void>;
 }
 
 export interface OAuthToken {
@@ -156,7 +158,8 @@ export class TumblrClient {
 			userAgent: options.userAgent ?? DEFAULT_UA,
 			fetch: options.fetch,
 			retry: options.retry,
-			timeoutMs: options.timeoutMs
+			timeoutMs: options.timeoutMs,
+			beforeRequest: options.beforeRequest
 		});
 	}
 
@@ -280,6 +283,7 @@ export class TumblrClient {
 
 	/** Fetch avatar bytes. The endpoint is public and returns an image. */
 	async blogAvatar(blogIdentifier: string, size = 64): Promise<Response> {
+		await this.options.beforeRequest?.();
 		const fetchImpl = this.options.fetch ?? globalThis.fetch.bind(globalThis);
 		return fetchImpl(this.blogAvatarUrl(blogIdentifier, size), {
 			headers: {

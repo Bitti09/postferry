@@ -12,6 +12,8 @@ export interface TumblrClientOptions {
     fetch?: FetchLike;
     retry?: RetryOptions | false;
     timeoutMs?: number;
+    /** Called before every HTTP request (including retries). */
+    beforeRequest?: () => void | Promise<void>;
 }
 export interface OAuthToken {
     token: string;

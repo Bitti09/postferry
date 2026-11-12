@@ -44,6 +44,8 @@ export interface HttpClientOptions {
     fetch?: FetchLike;
     retry?: RetryOptions | false;
     timeoutMs?: number;
+    /** Called before every HTTP request (including retries) for quota/rate limiting. */
+    beforeRequest?: () => void | Promise<void>;
 }
 /**
  * Low-level HTTP client: authentication, query/form encoding, timeouts,
@@ -56,6 +58,7 @@ export declare class TumblrHttpClient {
     private readonly fetchImpl;
     private readonly retry;
     private readonly timeoutMs;
+    private readonly beforeRequest?;
     constructor(options?: HttpClientOptions);
     private buildPairs;
     private urlWithQuery;
