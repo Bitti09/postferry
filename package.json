@@ -27,8 +27,7 @@
 		"typecheck": "tsc -p tsconfig.json",
 		"build": "tsc -p tsconfig.build.json",
 		"prepublishOnly": "npm test",
-		"prepack": "npm run build",
-		"prepare": "npm run build"
+		"prepack": "npm run build"
 	},
 	"devDependencies": {
 		"@types/node": "^26.6.6",
