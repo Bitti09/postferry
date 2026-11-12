@@ -47,5 +47,13 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"author": "postferry contributors"
+	"author": "postferry contributors",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Bitti09/postferry.git"
+	},
+	"homepage": "https://github.com/Bitti09/postferry#readme",
+	"bugs": {
+		"url": "https://github.com/Bitti09/postferry/issues"
+	}
 }
