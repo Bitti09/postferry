@@ -1,15 +1,23 @@
 # postferry
 
-**Unofficial project.** This package is not affiliated with, endorsed by, or
-sponsored by Tumblr, Inc. or Automattic, Inc. “Tumblr” is a trademark of
-Tumblr, Inc., used here only to describe API compatibility. “NPF” refers to
-Tumblr's Neue Post Format. This package is an independent implementation; it
-does not include Tumblr's source code, documentation, logos, or other
-proprietary material.
+Unofficial, typed client for the Tumblr API v2 and Neue Post Format (NPF).
 
-`postferry` is a dependency-free, typed client for the Tumblr API v2 and
-Neue Post Format. It runs on Node 18+, browsers, and edge runtimes because
-request signing uses WebCrypto instead of Node's `crypto` or `oauth` packages.
+## ⚠️ Notice ⚠️
+
+---
+
+This library is **NOT** official, endorsed, sponsored by, or otherwise
+associated with Tumblr in any way, shape, or form.
+
+It was built using the API reference documents, and like any other project
+built using the API (including those made using this library) should conform to
+the [Tumblr Application Developer and API License
+Agreement](https://www.tumblr.com/docs/api_agreement). Be sure you also follow
+it.
+
+`postferry` is dependency-free and runs on Node 18+, browsers, and edge
+runtimes because request signing uses WebCrypto instead of Node's `crypto` or
+`oauth` packages.
 
 The endpoint behavior follows the publicly documented API:
 
@@ -83,7 +91,7 @@ The upstream `tumblr.js` client only supports OAuth 1.0a, hard-codes a Node
 - Legacy-post detection: not every response is NPF, even with `npf=true`. Use
   `isNpfPost()`, `hasLegacyContent()` and `postFormat()`.
 
-## Usage
+## How to use
 
 ```ts
 import { TumblrClient, createTumblrClient } from 'postferry';
