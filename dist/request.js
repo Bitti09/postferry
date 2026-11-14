@@ -183,9 +183,17 @@ export class TumblrHttpClient {
                         attempt < attempts - 1 &&
                         RETRYABLE_STATUS.has(response.status) &&
                         (method === 'GET' || response.status === 429)) {
+                        const maxDelay = retryOptions.maxDelayMs ?? 8_000;
+                        const retryAfter = error.retryAfterMs;
+                        // A long Retry-After is a real quota wall, not something to
+                        // sleep through. Surface the 429 to the caller instead of
+                        // blocking a request (and a page spinner) for minutes.
+                        if (retryAfter !== undefined && retryAfter > maxDelay) {
+                            throw error;
+                        }
                         lastError = error;
-                        const delay = error.retryAfterMs ??
-                            Math.min((retryOptions.baseDelayMs ?? 400) * 2 ** attempt, retryOptions.maxDelayMs ?? 8_000);
+                        const delay = Math.min(retryAfter ??
+                            Math.min((retryOptions.baseDelayMs ?? 400) * 2 ** attempt, maxDelay), maxDelay);
                         await sleep(delay + Math.random() * 200, options.signal);
                         continue;
                     }

@@ -119,6 +119,27 @@ test('429 responses are retried using Retry-After', async () => {
 	assert.deepEqual(result.posts, []);
 });
 
+test('long Retry-After is surfaced instead of sleeping through it', async () => {
+	const mock = mockFetch(
+		() =>
+			new Response(JSON.stringify({ meta: { status: 429, msg: 'Limit Exceeded' } }), {
+				status: 429,
+				headers: { 'retry-after': '3600', 'content-type': 'application/json' }
+			})
+	);
+	const client = new TumblrClient({
+		consumerKey: 'key',
+		fetch: mock.fetch,
+		retry: { attempts: 3, baseDelayMs: 1, maxDelayMs: 50 }
+	});
+
+	await assert.rejects(
+		() => client.userDashboard({ limit: 20 }),
+		(error: unknown) => error instanceof TumblrApiError && error.status === 429
+	);
+	assert.equal(mock.calls.length, 1);
+});
+
 test('non-retryable errors surface as TumblrApiError with subcode', async () => {
 	const mock = mockFetch(
 		() =>
